@@ -13,6 +13,13 @@ object TurnIt extends App {
   	// print(chopHead(chopHead(chopHead(chopHead(a)))), "\n")
   	// print(chopHead(A), "\n")
   	// print(transposeH(A), "\n")
-
   }
+  def th(N: Int, B: List[Int]): List[List[Int]] = if (N == 0) Nil else B :: th(N - 1, B)
+  val a: List[Int] = (1 to 2000).toList
+  val b: List[List[Int]] = th(2000, a)
+
+  // println(b)
+  println("hello1")
+  val _ = transpose(b)
+  println("Hello World")
 }
