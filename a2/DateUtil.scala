@@ -3,14 +3,11 @@ object DateUtil extends App {
   def normalMonths: List[Int] = List(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
   def leapMonths:   List[Int] = List(31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
 
-  def isOlder(x: Date, y: Date): Boolean = {
-    if (x._3 < y._3) true else
-    if (x._3 > y._3) false else {
-      if (x._2 < y._2) true else
-      if (x._2 > y._2) false else {
-        if (x._1 < y._1) true else false
-      }
-    } 
+  def isOlder(x: Date, y: Date): Boolean = (x, y) match {
+    case (x._3 < y._3) => true
+    case (x._2 < y._2) => true
+    case (x._1 < y._1) => true
+    case _ => false
   }
 
   def numberInMonth(xs: List[Date], month: Int): Int = {
@@ -47,7 +44,7 @@ object DateUtil extends App {
     var month: String = getMonth(d._2, List("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"))
     month + "-" + d._1 + "-" + d._3
   }
-  def isLeapYear(yr: Int): Boolean = (yr % 4 == 0)
+  def isLeapYear(yr: Int): Boolean = (yr % 400 == 0 || (yr % 4 == 0 && yr % 100 != 0))
 
   def whatMonth(n: Int, yr: Int): Int = {
     def calMonth(d: Int, m: Int, ds: List[Int]): Int = {
