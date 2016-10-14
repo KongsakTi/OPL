@@ -20,15 +20,27 @@ object Process {
   // Example: eval(e, Map("x" -> 4.0)) evaluates the expression 
   // with the variable "x" set to 4.0.
   def eval(e: Expression, varAssn: Map[String, Double]): Double =  {
-
-    throw new Exception("Not yet implemented")
+    e match {
+      case Constant(c) => c
+      case Var(x) => varAssn.get(x).get
+      case Sum(l, r) => eval(l, varAssn) + eval(r, varAssn)
+      case Prod(l, r) => eval(l, varAssn) * eval(r, varAssn)
+      case Power(l, r) => math.pow(eval(l, varAssn),eval(r, varAssn))
+    }
   }
 
   // symbolically differentiates an expression e: Expression with 
   // respect to the variable varName: String
   def differentiate(e: Expression, varName: String): Expression = {
+    e match {
+      case Constant(c) => Constant(0)
+      case Var(x) => Constant(1)
+      case Sum(l, r) => Sum(differentiate(l, varName), differentiate(r, varName))
+      case Prod(l @ Var(x), r ) => Prod(differentiate(l, varName), differentiate(r, varName)) 
+      case Prod(l, r) => Prod(differentiate(l, varName), differentiate(r, varName))
+      case Power(l @ Var(x), r) => Prod(r, Power(l, Sum(r, Constant(-1))))
+    }
     
-    throw new Exception("Not yet implemented")
   }
 
   // forms a new expression that simplifies the given expression e: Expression
@@ -37,8 +49,20 @@ object Process {
   // follow, use this function to put an expression in this form.
 	// you may leave this function blank if can't find any use. 
   def simplify(e: Expression): Expression = {
-
-    throw new Exception("Not yet implemented")
+    e match {
+      // case Constant(x) => if (x == 0) None else Constant(x)
+      case Constant(x) => 
+      case Var(x) => Var(x)
+      case Sum(l @ Constant(x), r @ Constant(y)) => Constant(x + y)
+      case Sum(l @ Var(x), r @ Constant(y)) => Sum(Var(x), r)
+      case Sum(l @ Constant(x), r @ Var(y)) => Sum(l, Var(y))
+      case Sum(l, r) => Sum(simplify(l), simplify(r))
+      case Prod(l @ Constant(x), r @ Constant(y)) => Constant(x * y)
+      case Prod(l, r) => Prod(l, r)
+      case Power(l, r) => Power(l, r)
+    }
+    
+    // throw new Exception("Not yet implemented")
   }
 
 }
