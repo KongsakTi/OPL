@@ -36,7 +36,6 @@ object Process {
       case Constant(c) => Constant(0)
       case Var(x) => Constant(1)
       case Sum(l, r) => Sum(differentiate(l, varName), differentiate(r, varName))
-      case Prod(l @ Var(x), r ) => Prod(differentiate(l, varName), differentiate(r, varName)) 
       case Prod(l, r) => Prod(differentiate(l, varName), differentiate(r, varName))
       case Power(l @ Var(x), r) => Prod(r, Power(l, Sum(r, Constant(-1))))
     }
