@@ -89,16 +89,29 @@ println(r_7, v_7)
 
 // --------------------------------------------------------
 
-val s_8 = "(x^2 * 2) * 3"
+val s_8 = "(x * 2) * 3"
 val e_8 = Parser(s_8).get
 val p_8 = Process.differentiate(e_8, "x")
 val x_8 = 17
 val v_8 = Process.eval(p_8, Map("x" -> x_8))
-val r_8 = "12 * x"
-val a_8 = 204
+val r_8 = "6"
+val a_8 = 6
 
 println(s_8, x_8)
 println(r_8, v_8)
+
+// --------------------------------------------------------
+
+val s_9 = "(x^2 * 7)^2 * 3"
+val e_9 = Parser(s_9).get
+val p_9 = Process.differentiate(e_9, "x")
+val x_9 = 11
+val v_9 = Process.eval(p_9, Map("x" -> x_9))
+val r_9 = "2 * x * (x + 1) + x^2 + 2"
+val a_9 = 782628
+
+println(s_9, x_9)
+println(r_9, v_9)
 
 // --------------------------------------------------------
 
@@ -110,4 +123,5 @@ println("5: ", v_5 == a_5)
 println("6: ", v_6 == a_6) 
 println("7: ", v_7 == a_7)
 println("8: ", v_8 == a_8)  
+println("9: ", v_9 == a_9) 
 

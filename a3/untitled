@@ -1,0 +1,12 @@
+val s_9 = "(x^2 * 7)^2 * 3"
+val e_9 = Parser(s_9).get
+val p_9 = Process.differentiate(e_9, "x")
+val x_9 = 17
+val v_9 = Process.eval(p_9, Map("x" -> x_9))
+val r_9 = "2 * x * (x + 1) + x^2 + 2"
+val a_9 = 903
+
+println(s_9, x_9)
+println(r_9, v_9)
+
+// --------------------------------------------------------
