@@ -33,35 +33,67 @@ object Process {
   // respect to the variable varName: String
   def differentiate(e: Expression, varName: String): Expression = {
     e match {
-      case Constant(c) => Constant(0)
-      case Var(x) => Constant(1)
+      case Constant(_) => Constant(0)
+      case Var(_) => Constant(1)
       case Sum(l, r) => Sum(differentiate(l, varName), differentiate(r, varName))
+
+      // constant * x
+      case Prod(l @ Constant(_), r @ Var(_)) => l
+      case Prod(l @ Var(_), r @ Constant(_)) => r
+
+      // constant * x^constant
+      case Prod(l @ Constant(_), r @ Power(_, _)) => Prod(l, differentiate(r, varName))
+      case Prod(l @ Power(_, _), r @ Constant(_)) => Prod(r, differentiate(l, varName))
+
+      // exp * x^exp
+      case Prod(l, r @ Power(_, _)) => Prod(l, differentiate(r, varName))
+      case Prod(l @ Power(_, _), r) => Prod(r, differentiate(l, varName))
+
+      // Product Rule
+      case Prod(l @ Sum(_, _), r @ Sum(_, _)) => Sum(Prod(differentiate(l, varName), r), Prod(l, differentiate(r, varName)))
+
+      // exp * x
+      case Prod(l ,r @ Var(_)) => Prod(l, differentiate(r, varName))
+      case Prod(l @ Var(_), r) => Prod(r, differentiate(l, varName))
+
+      // e * e
       case Prod(l, r) => Prod(differentiate(l, varName), differentiate(r, varName))
-      case Power(l @ Var(x), r) => Prod(r, Power(l, Sum(r, Constant(-1))))
+      
+      // x^constant
+      case Power(l @ Var(_), r) => Prod(r, Power(l, Sum(r, Constant(-1))))
+      case Power(l @ Constant(_), r) => Constant(0)
+
+      // Chain Rule
+      case Power(l @ Sum(_, _), r) => Prod(r, Prod(differentiate(l, varName), Power(l, Sum(r, Constant(-1)))))
+      // case Power(l, r) => Power(differentiate(l, varName), differentiate(r, varName))
     }
     
   }
+
+  // def checking(x): Double = {
+
+  // }
 
   // forms a new expression that simplifies the given expression e: Expression
   // the goal of this function is produce an expression that is easier to
   // evaluate and/or differentiate.  If there's a canonical form you'd like to
   // follow, use this function to put an expression in this form.
 	// you may leave this function blank if can't find any use. 
-  def simplify(e: Expression): Expression = {
-    e match {
-      // case Constant(x) => if (x == 0) None else Constant(x)
-      case Constant(x) => 
-      case Var(x) => Var(x)
-      case Sum(l @ Constant(x), r @ Constant(y)) => Constant(x + y)
-      case Sum(l @ Var(x), r @ Constant(y)) => Sum(Var(x), r)
-      case Sum(l @ Constant(x), r @ Var(y)) => Sum(l, Var(y))
-      case Sum(l, r) => Sum(simplify(l), simplify(r))
-      case Prod(l @ Constant(x), r @ Constant(y)) => Constant(x * y)
-      case Prod(l, r) => Prod(l, r)
-      case Power(l, r) => Power(l, r)
-    }
+  // def simplify(e: Expression): Expression = {
+  //   e match {
+  //     // case Constant(x) => if (x == 0) None else Constant(x)
+  //     case Constant(x) => 
+  //     case Var(x) => Var(x)
+  //     case Sum(l @ Constant(x), r @ Constant(y)) => Constant(x + y)
+  //     case Sum(l @ Var(x), r @ Constant(y)) => Sum(Var(x), r)
+  //     case Sum(l @ Constant(x), r @ Var(y)) => Sum(l, Var(y))
+  //     case Sum(l, r) => Sum(simplify(l), simplify(r))
+  //     case Prod(l @ Constant(x), r @ Constant(y)) => Constant(x * y)
+  //     case Prod(l, r) => Prod(l, r)
+  //     case Power(l, r) => Power(l, r)
+  //   }
     
-    // throw new Exception("Not yet implemented")
-  }
+  //   // throw new Exception("Not yet implemented")
+  // }
 
 }

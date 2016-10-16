@@ -1,0 +1,24 @@
+Sum(
+	Prod(
+		Sum(
+			Prod(
+				Const(2.0), 
+				Power(
+					Var(x), 
+					Sum(
+						Const(2.0), 
+						Const(-1.0)))), 
+			Const(0.0)), 
+		Sum(
+			Var(x), 
+			Const(1.0))), 
+	Prod(
+		Sum(
+			Power(
+				Var(x), 
+				Const(2.0)), 
+			Const(2.0)), 
+		Sum(Const(1.0), Const(0.0))))
+
+
+[ (2 * x) * (x + 1) ] + [ (x^2 + 2) * 1 ]
