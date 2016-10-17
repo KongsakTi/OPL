@@ -115,6 +115,19 @@ println(r_9, v_9)
 
 // --------------------------------------------------------
 
+val s_10 = "(2 * 3) * x"
+val e_10 = Parser(s_10).get
+val p_10 = Process.differentiate(e_10, "x")
+val x_10 = 17
+val v_10 = Process.eval(p_10, Map("x" -> x_10))
+val r_10 = "6"
+val a_10 = 6
+
+println(s_10, x_10)
+println(r_10, v_10)
+
+// --------------------------------------------------------
+
 println("1: ", v_1 == a_1)
 println("2: ", v_2 == a_2)
 println("3: ", v_3 == a_3)
@@ -124,4 +137,5 @@ println("6: ", v_6 == a_6)
 println("7: ", v_7 == a_7)
 println("8: ", v_8 == a_8)  
 println("9: ", v_9 == a_9) 
+println("10: ", v_10 == a_10) 
 

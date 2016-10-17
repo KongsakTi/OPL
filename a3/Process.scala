@@ -57,8 +57,8 @@ object Process {
       case Prod(l @ Var(_), r) => Prod(r, differentiate(l, varName))
 
       // exp * constant
-      case Prod(l, r @ Constant(_)) => Prod(differentiate(l, varName), r)
-      case Prod(l @ Constant(_), r) => Prod(differentiate(r, varName), l)
+      case Prod(l, r @ Constant(_)) => Prod(r, differentiate(l, varName))
+      case Prod(l @ Constant(_), r) => Prod(l, differentiate(r, varName))
 
       // e * e
       case Prod(l, r) => Prod(differentiate(l, varName), differentiate(r, varName))
