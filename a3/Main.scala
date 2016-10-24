@@ -12,11 +12,7 @@ object Solver {
 	    (x: Double) => Process.eval(exp, Map(varName -> x))
 	}
 
-	def loop(n: Integer, guess: Double): Double = {
-		if (n == 0) guess else loop(n - 1, Newton.solve(wrapper(ex.get), wrapper(df), guess).get)
-	}
-
-	loop(100, guess)
+  Newton.solve(wrapper(ex.get), wrapper(df), guess).get
 
     // TODO: complete the implementation. This will construct the 
     // appropriate functions and call Newton.solve

@@ -25,51 +25,47 @@ object MyParser {
         case Expo => Power(left, right)
       }
     }
-    def isHigherOp(p_op: Token, c_op: Token): Boolean = {
-      (p_op, c_op) match {
-        case (Expo, _) => false
-        case (Times, Expo) => true
-        case ()
+    // Prev op is Higher than Curr op
+    def isHigherOp(prev: Token, curr: Token): Boolean = {
+      (prev, curr) match {
+        case (Expo, _) => true
+        case (_, Expo) => false
+        case (Times, _) => true
+        case (_, Times) => false
+        case (_, _) => false
       }
     }
-    def parser(lst: List[Token]): Expression = {
-      if (lst.length <= 1) lst.head match {
-        case Const(x) => Constant(x)
-        case Varr(x) => Var(x)
-      } else if (lst.length >= 4){
-        val val_1 = lst.head
-        val ops_1 = lst.tail.head
-        val val_2 = lst.tail.tail.head
-        val ops_2 = lst.tail.tail.tail.head
-        val theRest = lst.tail.tail.tail.tail
-        
-        // println(theRest)
 
-        (ops_1, ops_2) match {
+    def unStack(exp: List[Expression], tks: List[Token]): Expression = {
+      if (!tks.isEmpty) unStack(matchOp(exp.tail.head, exp.head, tks.head) :: exp.tail.tail, tks.tail) else exp.head
+    }
 
-          case (Expo, _) => matchOp(Power(parser(List(val_1)), 
-                                          parser(List(val_2))),
-                                    parser(theRest), ops_2)
+    def findParen(exp: List[Expression], tks: List[Token]): (List[Expression], List[Token]) = {
+      if (tks.head == LParen) (exp, tks.tail) else findParen(matchOp(exp.tail.head, exp.head, tks.head) :: exp.tail.tail, tks.tail)
+    }
 
-          case (Times, Expo) => Prod(parser(List(val_1)), parser(lst.tail.tail))
-          
-          case (Times, _) => matchOp(Prod(parser(List(val_1)), 
-                                          parser(List(val_2))), 
-                                     parser(theRest), ops_2)
-
-
-          case (Plus, _) => Sum(parser(List(val_1)), parser(lst.tail.tail))
+    def parser(lst: List[Token], exp: List[Expression], tks: List[Token]): Expression = {
+      if (lst.isEmpty) {
+        return unStack(exp, tks)
+      } else {
+        lst.head match {
+          case Const(x) => parser(lst.tail, Constant(x) :: exp, tks)
+          case Varr(x) => parser(lst.tail, Var(x) :: exp, tks)
+          case LParen => parser(lst.tail, exp, lst.head :: tks)
+          case RParen => {
+            val tmp = findParen(exp, tks)
+            parser(lst.tail, tmp._1, tmp._2)
+            }
+          case _ => if (!tks.isEmpty && isHigherOp(tks.head, lst.head)) {
+                      parser(lst, matchOp(exp.tail.head, exp.head, tks.head) :: exp.tail.tail, tks.tail)
+                    } else {
+                      parser(lst.tail, exp, lst.head :: tks)
+                    }
 
         }
-      } else {
-        val val_1 = lst.head
-        val ops_1 = lst.tail.head
-        val val_2 = lst.tail.tail.head
-        matchOp(parser(List(val_1)), parser(List(val_2)), ops_1)
       }
-      
     }
-    Some(parser(tokenize(input).get))
+    Some(parser(tokenize(input).get, Nil, Nil))
   }
 
   def tokenize(input:String): Option[List[Token]] = {

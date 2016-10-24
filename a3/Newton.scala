@@ -10,8 +10,8 @@ object Newton {
   def solve(f: Double => Double, df: Double => Double, 
             guess: Double = 1.0): Option[Double] = {
   	// val ev = Process.eval(df, Map(varName -> guess))
-
-  	Some(guess - (f(guess)/ df(guess)))
+    if (math.abs(f(guess)) <= 1e-28) Some(guess) else solve(f, df, (guess - f(guess)/df(guess)))
+  	// Some(guess - (f(guess)/ df(guess)))
     // throw new Exception("Not yet implemented") // replace me with real code
   }
 
