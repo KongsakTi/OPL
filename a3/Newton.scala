@@ -9,8 +9,10 @@ object Newton {
 
   def solve(f: Double => Double, df: Double => Double, 
             guess: Double = 1.0): Option[Double] = {
+  	// val ev = Process.eval(df, Map(varName -> guess))
 
-    throw new Exception("Not yet implemented") // replace me with real code
+  	Some(guess - (f(guess)/ df(guess)))
+    // throw new Exception("Not yet implemented") // replace me with real code
   }
 
 }

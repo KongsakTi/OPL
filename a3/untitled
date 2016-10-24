@@ -1,12 +1,12 @@
-val s_9 = "(x^2 * 7)^2 * 3"
-val e_9 = Parser(s_9).get
-val p_9 = Process.differentiate(e_9, "x")
-val x_9 = 17
-val v_9 = Process.eval(p_9, Map("x" -> x_9))
-val r_9 = "2 * x * (x + 1) + x^2 + 2"
-val a_9 = 903
+val s_18 = "(x^2 + 7)^2 * (x + 1) * (3 * x^4 - 2)^2"
+val e_18 = Parser(s_18).get
+val p_18 = Process.differentiate(e_18, "x")
+val x_18 = 7
+val v_18 = Process.eval(p_18, Map("x" -> x_18))
+val r_18 = "too lazy to type"
+val a_18 = 2210
 
-println(s_9, x_9)
-println(r_9, v_9)
+println(s_18, x_18)
+println(r_18, v_18)
 
 // --------------------------------------------------------

@@ -36,10 +36,45 @@ object Process {
       case Constant(_) => Constant(0)
       case Var(_) => Constant(1)
       case Sum(l, r) => Sum(differentiate(l, varName), differentiate(r, varName))
+
+      // constant * x
+      // case Prod(l @ Constant(_), r @ Var(_)) => l
+      // case Prod(l @ Var(_), r @ Constant(_)) => r
+
+      // constant * x^constant
+      // case Prod(l @ Constant(_), r @ Power(_, _)) => Prod(l, differentiate(r, varName))
+      // case Prod(l @ Power(_, _), r @ Constant(_)) => Prod(r, differentiate(l, varName))
+
+      // exp * x^exp
+      // case Prod(l, r @ Power(_, _)) => Prod(l, differentiate(r, varName))
+      // case Prod(l @ Power(_, _), r) => Prod(r, differentiate(l, varName))
+
+      // exp * x
+      // case Prod(l ,r @ Var(_)) => Prod(l, differentiate(r, varName))
+      // case Prod(l @ Var(_), r) => Prod(r, differentiate(l, varName))
+
+      // exp * constant
+      // case Prod(l, r @ Constant(_)) => Prod(r, differentiate(l, varName))
+      // case Prod(l @ Constant(_), r) => Prod(l, differentiate(r, varName))
+
       // Product Rule
       case Prod(l , r) => Sum(Prod(differentiate(l, varName), r), Prod(l, differentiate(r, varName)))
+
+      // e * e
+      // case Prod(l, r) => Prod(differentiate(l, varName), differentiate(r, varName))
+      
+      // x^constant
+      case Power(l @ Var(_), r) => Prod(r, Power(l, Sum(r, Constant(-1))))
+
+      // constant ^ exp
+      case Power(l @ Constant(_), r) => Constant(0)
+
       // Chain Rule
+      // case Power(l @ Sum(_, _), r) => Prod(r, Prod(differentiate(l, varName), Power(l, Sum(r, Constant(-1)))))
+      // case Power(l @ Prod(_, _), r) => Prod(r, Prod(differentiate(l, varName), Power(l, Sum(r, Constant(-1)))))
+      // case Power(l @ Power(_, _), r) =>
       case Power(l, r) => Prod(r, Prod(differentiate(l, varName), Power(l, Sum(r, Constant(-1)))))
+     
     }
     
   }

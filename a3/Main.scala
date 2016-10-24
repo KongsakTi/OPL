@@ -6,10 +6,22 @@ object Solver {
 
   def solve(expString: String, varName: String, guess: Double): Double = {
     val ex = Parser(expString)
+    val df = Process.differentiate(ex.get, varName)
+    
+    def wrapper(exp: Expression): Double => Double = {
+	    (x: Double) => Process.eval(exp, Map(varName -> x))
+	}
+
+	def loop(n: Integer, guess: Double): Double = {
+		if (n == 0) guess else loop(n - 1, Newton.solve(wrapper(ex.get), wrapper(df), guess).get)
+	}
+
+	loop(100, guess)
 
     // TODO: complete the implementation. This will construct the 
     // appropriate functions and call Newton.solve
 
-    throw new Exception("Not yet completed") // <- remove me when you're done
+    // 0
+    // throw new Exception("Not yet completed") // <- remove me when you're done
   }
 }

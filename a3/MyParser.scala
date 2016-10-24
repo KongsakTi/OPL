@@ -10,14 +10,66 @@ object MyParser {
   case object Expo extends Token
   case object LParen extends Token
   case object RParen extends Token
-  case class Var(x: String) extends Token
+  case class Varr(x: String) extends Token
 
   // your implementation of a parser that takes in an input String
   // and returns an option: None if the input is not a well-formed
   // expression. Otherwise, it evaluates to Some(e) where e is an
   // Expression which encodes the input string.
   def parse(input: String): Option[Expression] = {
-    ???
+    def matchOp(left: Expression, right: Expression, op: Token): Expression = {
+      op match {
+        case Plus => Sum(left, right)
+        case Minus => Sum(left, Prod(Constant(-1), right))
+        case Times => Prod(left, right)
+        case Expo => Power(left, right)
+      }
+    }
+    def isHigherOp(p_op: Token, c_op: Token): Boolean = {
+      (p_op, c_op) match {
+        case (Expo, _) => false
+        case (Times, Expo) => true
+        case ()
+      }
+    }
+    def parser(lst: List[Token]): Expression = {
+      if (lst.length <= 1) lst.head match {
+        case Const(x) => Constant(x)
+        case Varr(x) => Var(x)
+      } else if (lst.length >= 4){
+        val val_1 = lst.head
+        val ops_1 = lst.tail.head
+        val val_2 = lst.tail.tail.head
+        val ops_2 = lst.tail.tail.tail.head
+        val theRest = lst.tail.tail.tail.tail
+        
+        // println(theRest)
+
+        (ops_1, ops_2) match {
+
+          case (Expo, _) => matchOp(Power(parser(List(val_1)), 
+                                          parser(List(val_2))),
+                                    parser(theRest), ops_2)
+
+          case (Times, Expo) => Prod(parser(List(val_1)), parser(lst.tail.tail))
+          
+          case (Times, _) => matchOp(Prod(parser(List(val_1)), 
+                                          parser(List(val_2))), 
+                                     parser(theRest), ops_2)
+
+
+          case (Plus, _) => Sum(parser(List(val_1)), parser(lst.tail.tail))
+
+        }
+      } else {
+        val val_1 = lst.head
+        val ops_1 = lst.tail.head
+        val val_2 = lst.tail.tail.head
+        matchOp(parser(List(val_1)), parser(List(val_2)), ops_1)
+      }
+      
+    }
+    Some(parser(tokenize(input).get))
   }
 
   def tokenize(input:String): Option[List[Token]] = {
@@ -40,7 +92,7 @@ object MyParser {
           case minus(_*) => Minus
           case time(_*) => Times
           case expo(_*) => Expo
-          case vari(name) => Var(name.trim)
+          case vari(name) => Varr(name.trim)
           case _ => throw BadToken
         }
 

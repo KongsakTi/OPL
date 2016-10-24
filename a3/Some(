@@ -1,7 +1,30 @@
-Some(
+Prod(Sum(Var(x), Const(1.0)), Prod(Const(2.0), Prod(Sum(Prod(Const(2.0), Power(Var(x), Sum(Const(2.0), Const(-1.0)))), Const(0.0)), Power(Sum(Power(Var(x), Const(2.0)), Const(7.0)), Sum(Const(2.0), Const(-1.0))))))
+
+
+Prod(
 	Sum(
-		Sum(
-			Power( Const(2.0), Var(x) ), Var(x) ), 
-		Prod(Const(4.0), Const(3.0))
-	   )
-	)
+		Var(x), 
+		Const(1.0)), 
+	Prod(
+		Const(2.0), 
+		Prod(
+			Sum(
+				Prod(
+					Const(2.0), 
+					Power(
+						Var(x), 
+						Sum(
+							Const(2.0), 
+							Const(-1.0)))), 
+				Const(0.0)), 
+			Power(
+				Sum(
+					Power(
+						Var(x), 
+						Const(2.0)), 
+					Const(7.0)), 
+				Sum(
+					Const(2.0), 
+					Const(-1.0))))))
+
+(2 * x) * (x^2 + 7) * 2 * (x + 1)

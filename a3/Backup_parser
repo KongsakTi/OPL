@@ -1,0 +1,104 @@
+  
+  def parse(input: String): Option[Expression] = {
+    def matchOp(left: Expression, right: Expression, op: Token): Expression = {
+      op match {
+        case Plus => Sum(left, right)
+        case Minus => Sum(left, Prod(Constant(-1), right))
+        case Times => Prod(left, right)
+        case Expo => Power(left, right)
+      }
+    }
+    def parser(lst: List[Token]): Expression = {
+      if (lst.length <= 1) lst.head match {
+        case Const(x) => Constant(x)
+        case Varr(x) => Var(x)
+      } else if (lst.length >= 4){
+        val val_1 = lst.head
+        val ops_1 = lst.tail.head
+        val val_2 = lst.tail.tail.head
+        val ops_2 = lst.tail.tail.tail.head
+        val theRest = lst.tail.tail.tail.tail
+        
+        // println(theRest)
+
+        (ops_1, ops_2) match {
+
+          case (Expo, _) => matchOp(Power(parser(List(val_1)), 
+                                          parser(List(val_2))),
+                                    parser(theRest), ops_2)
+          
+          case (Times, Expo) => Prod(parser(List(val_1)), parser(lst.tail.tail))
+          
+          case (Times, _) => matchOp(Prod(parser(List(val_1)), 
+                                          parser(List(val_2))), 
+                                     parser(theRest), ops_2)
+
+
+          case (Plus, _) => Sum(parser(List(val_1)), parser(lst.tail.tail))
+
+        }
+      } else {
+        val val_1 = lst.head
+        val ops_1 = lst.tail.head
+        val val_2 = lst.tail.tail.head
+        matchOp(parser(List(val_1)), parser(List(val_2)), ops_1)
+      }
+      
+    }
+    Some(parser(tokenize(input).get))
+  }
+
+
+
+
+
+
+
+
+----------------------------------------------------------------------
+
+
+  def parse(input: String): Option[Expression] = {
+    def matchOp(left: Expression, right: Expression, op: Token): Expression = {
+      op match {
+        case Plus => Sum(left, right)
+        case Minus => Sum(left, Prod(Constant(-1), right))
+        case Times => Prod(left, right)
+        case Expo => Power(left, right)
+      }
+    }
+    def parser(lst: List[Token]): Expression = {
+      if (lst.length <= 1) lst.head match {
+        case Const(x) => Constant(x)
+        case Varr(x) => Var(x)
+      } else if (lst.length >= 4){
+        val val_1 = lst.head
+        val ops_1 = lst.tail.head
+        val val_2 = lst.tail.tail.head
+        val ops_2 = lst.tail.tail.tail.head
+        val theRest = lst.tail.tail.tail.tail
+        
+        println(theRest)
+
+        (ops_1, ops_2) match {
+          
+          case (Expo, _) => matchOp(Power(parser(List(val_1)), 
+                                          parser(List(val_2))),
+                                    parser(theRest), ops_2)
+          case (Times, Expo) => Prod(parser(List(val_1)), Power(parser(List(val_2)), parser(theRest)))
+          case (Times, _) => matchOp(Prod(parser(List(val_1)), 
+                                          parser(List(val_2))), 
+                                     parser(theRest), ops_2)
+          case (Plus, _) => Sum(parser(List(val_1)), matchOp(parser(List(val_2)), parser(theRest), ops_2))
+
+        }
+      } else {
+        val val_1 = lst.head
+        val ops_1 = lst.tail.head
+        val val_2 = lst.tail.tail.head
+        matchOp(parser(List(val_1)), parser(List(val_2)), ops_1)
+      }
+      
+    }
+    Some(parser(tokenize(input).get))
+  }

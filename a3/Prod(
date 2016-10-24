@@ -1,0 +1,11 @@
+Prod(
+	Const(3.0), 
+	Sum(
+		Power(
+			Var(x), 
+			Const(5.0)), 
+		Prod(
+			Const(7.0), 
+			Var(x)))))
+
+3 * (x^5 + 7 * x)
