@@ -38,8 +38,11 @@ object Process {
       case Sum(l, r) => Sum(differentiate(l, varName), differentiate(r, varName))
       // Product Rule
       case Prod(l , r) => Sum(Prod(differentiate(l, varName), r), Prod(l, differentiate(r, varName)))
+      // c^x
+      case Power(l @ Constant(c), r) => Prod(Prod(differentiate(r, varName), Power(l, r)), Constant(math.log(c)))
       // Chain Rule
       case Power(l, r) => Prod(r, Prod(differentiate(l, varName), Power(l, Sum(r, Constant(-1)))))
+
     }
     
   }
