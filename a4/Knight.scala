@@ -37,12 +37,12 @@ object Knight extends App {
 
         val possibleMoves = getPossibleMoves(at, n, visited)
 
-        // Die too, but not as miserable as the guy below
-        // val new_visited = possibleMoves.map(move => (move -> 1))
-        //                                .foldLeft(visited)((acc, kv) => acc + kv)
-        // val trialCont = possibleMoves.foldLeft(onFail) ((cb, move) =>
-        //   () => hasRouteHome(move, n, new_visited + (at -> 1), onSuccess, cb)
-        // )
+        // Die too, but not as miserable (Actually, this one is the guy below +1 size)
+        val new_visited = possibleMoves.map(move => (move -> 1))
+                                       .foldLeft(visited + (at -> 1))((acc, kv) => acc + kv)
+        val trialCont = possibleMoves.foldLeft(onFail) ((cb, move) =>
+          () => hasRouteHome(move, n, new_visited, onSuccess, cb)
+        )
 
         // Die miserably
         // val trialCont = possibleMoves.foldLeft(onFail) ((cb, move) =>
