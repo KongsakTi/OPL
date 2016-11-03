@@ -82,7 +82,7 @@ object Knight extends App {
     nextMove(home, Map(), success, fail)
   }
 
-  val sol = time { findOneCycle(args(0).toInt) }
-  println("sol: "+ sol)
+  // val sol = time { findOneCycle(args(0).toInt) }
+  // println("sol: "+ sol)
 
 }
