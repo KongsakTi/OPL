@@ -1,14 +1,18 @@
 package a4
 
-// TODO: Fix hasRouteHome, Add CycleTour
+// TODO: Fix CycleTour StackOverflow
 
 object Knight extends App {
   type Loc = (Int, Int)
+  def home = (1,1)
   def moves = List((1,2), (1,-2), (-1,2), (-1,-2), (2,1), (2,-1), (-2,1), (-2,-1))
-  def success = () => true
-  def fail    = () => false
+  def success = (map: Map[Loc, Int]) => {
+    println("YEAH")
+    map
+  }
+  def fail    = () => Map[Loc, Int]()
 
-  def isValidMove(at: loc, n: Int, visited: Map[Loc, Int]): Boolean = {
+  def isValidMove(at: Loc, n: Int, visited: Map[Loc, Int]): Boolean = {
     (at, n) match {
       case((row, col), n) =>  (row <= n) &&
                               (col <= n) &&
@@ -19,46 +23,57 @@ object Knight extends App {
   }
 
   // get all the possible and valid moves
-  def getPossibleMoves(at: loc, n: Int, visited: Map[loc, Int]): List[Loc] = {
+  def getPossibleMoves(at: Loc, n: Int, visited: Map[Loc, Int]): List[Loc] = {
     moves.map(move => (at._1 + move._1, at._2 + move._2))
         .filter((move => isValidMove(move, n, visited)))
   }
 
-  // Possible StackOverflow when false
-  def hasRouteHome(at: loc, n: Int, visited: Map[loc, Int],
-                    onSuccess: () => Boolean = success,
-                    onFail: () => Boolean = fail): Boolean = {
-    // println(at)
-    at match {
-      case (1,1) => onSuccess()
-      case _ => {
-        // val len = visited.size
-        // println(at, n, len)
-
-        val possibleMoves = getPossibleMoves(at, n, visited)
-
-        // Die too, but not as miserable (Actually, this one is the guy below +1 size)
-        val new_visited = possibleMoves.map(move => (move -> 1))
-                                       .foldLeft(visited + (at -> 1))((acc, kv) => acc + kv)
-        val trialCont = possibleMoves.foldLeft(onFail) ((cb, move) =>
-          () => hasRouteHome(move, n, new_visited, onSuccess, cb)
-        )
-
-        // Die miserably
-        // val trialCont = possibleMoves.foldLeft(onFail) ((cb, move) =>
-        //   () => hasRouteHome(move, n, visited + (at -> 1), onSuccess, cb)
-        // )
-
-        trialCont()
+  // DFS -> StackOverflow
+  // BFS -> Good Life =)
+  def hasRouteHome(at: Loc, n: Int, visited: Map[Loc, Int]): Boolean = {
+    def hasRouteHome_helper(ats: List[Loc], visited: Map[Loc, Int]): Boolean = {
+      ats match {
+        case Nil => false
+        case _ => if (ats.contains(home)) true else {
+          val next_ats = ats.map(at => getPossibleMoves(at, n, visited))
+                            .flatten
+          val new_visited = next_ats.foldLeft(visited)((acc, at) => acc + (at -> 1))
+          hasRouteHome_helper(next_ats, new_visited)
+        }
       }
     }
+    hasRouteHome_helper(List(at), visited)
   }
-
-    // val trialCont = possibleLocs.foldRight(nextTrial) ((loc, cb) =>
-    //   () => place(loc::board, cb, onSuccess)
-    // )
 
   def findAllCycles(n: Int): List[List[(Int,Int)]] = ???
 
-  def findOneCycle(n: Int): Option[List[(Int,Int)]] = ???
+  // StackOverflow Again !!!
+  def findOneCycle(n: Int): Option[List[(Int,Int)]] = {
+    val totalLocs = n * n - 1
+    def nextMove(at: Loc, visited: Map[Loc, Int],
+                onSuccess: (Map[Loc, Int]) => Map[Loc, Int] = success,
+                onFail: () => Map[Loc, Int] = fail): Map[Loc, Int] = {
+
+      println(at, visited, visited.size)
+
+      (at, visited.isEmpty, visited == totalLocs) match {
+        case ((1,1), false, true) => onSuccess(visited)
+        case ((1,1), false, _) => onFail()
+        case _ => {
+          val new_visited = if (at != home) visited + (at -> 1) else visited
+          val possibleMoves = getPossibleMoves(at, n, new_visited)
+                              .filter(move => hasRouteHome(move, n, new_visited))
+          // println(new_visited, possibleMoves)
+          val trialCont = possibleMoves.foldLeft(onFail)((cb, move) =>
+            () => nextMove(move, new_visited, onSuccess, cb)
+          )
+          trialCont()
+        }
+      }
+    }
+    val cycleTour = nextMove(home, Map())
+    println(cycleTour)
+    if (cycleTour.isEmpty) None else Some(cycleTour.keys.toList)
+  }
+
 }
