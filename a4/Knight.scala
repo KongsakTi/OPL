@@ -40,6 +40,21 @@ object Knight extends App {
 
   // DFS -> StackOverflow
   // BFS -> Good Life =)
+  def isConnected(at: Loc, n: Int, visited: Map[Loc, Int]): Boolean = {
+    def isConnected_helper(ats: List[Loc], visited: Map[Loc, Int]): Boolean = {
+      ats match {
+        case Nil => visited.size == n * n
+        case _ => {
+          val next_ats = ats.map(at => getPossibleMoves(at, n, visited))
+                            .flatten
+          val new_visited = next_ats.foldLeft(visited)((acc, at) => acc + (at -> 1))
+          isConnected_helper(next_ats, new_visited)
+        }
+      }
+    }
+    isConnected_helper(List(at), visited)
+  }
+
   def hasRouteHome(at: Loc, n: Int, visited: Map[Loc, Int]): Boolean = {
     def hasRouteHome_helper(ats: List[Loc], visited: Map[Loc, Int]): Boolean = {
       ats match {
@@ -60,17 +75,18 @@ object Knight extends App {
   // StackOverflow Again !!!
   // PS: Always end with (1, 1) since guarantee to have route home
   def findOneCycle(n: Int): Option[List[(Int,Int)]] = {
-    val totalLocs = n * n - 3
+    val totalLocs = n * n - 1
     def nextMove(at: Loc, visited: Map[Loc, Int],
                 onSuccess: (Map[Loc, Int]) => Option[List[Loc]],
                 onFail: () => Option[List[Loc]]): Option[List[Loc]] = {
-      println(visited.size, totalLocs)
+      // println(visited.size, totalLocs, visited.size == totalLocs)
       (at, visited.isEmpty, visited.size == totalLocs) match {
         case ((1,1), false, true) => onSuccess(visited)
         case ((1,1), false, _) => onFail()
         case _ => {
           val new_visited = if (at != home) visited + (at -> visited.size) else visited
           val possibleMoves = getPossibleMoves(at, n, new_visited)
+                              .filter(move => isConnected(move, n, new_visited))
                               .filter(move => hasRouteHome(move, n, new_visited))
           val trialCont = possibleMoves.foldRight(onFail)((move, cb) =>
             () => nextMove(move, new_visited, onSuccess, cb)
