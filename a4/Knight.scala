@@ -70,28 +70,47 @@ object Knight extends App {
     hasRouteHome_helper(List(at), visited)
   }
 
+  def Warnsdorff(at: Loc, n: Int, visited: Map[Loc, Int]): Int = {
+    at match {
+      case (1, 1) => 99
+      case _ => {
+        getPossibleMoves(at, n, visited)
+        .filter(move => isConnected(move, n, visited))
+        .length
+      }
+    }
+  }
+
   def findAllCycles(n: Int): List[List[(Int,Int)]] = ???
 
   // StackOverflow Again !!!
   // PS: Always end with (1, 1) since guarantee to have route home
   def findOneCycle(n: Int): Option[List[(Int,Int)]] = {
-    val totalLocs = n * n - 1
+    val totalLocs = n * n
     def nextMove(at: Loc, visited: Map[Loc, Int],
                 onSuccess: (Map[Loc, Int]) => Option[List[Loc]],
                 onFail: () => Option[List[Loc]]): Option[List[Loc]] = {
-      // println(visited.size, totalLocs, visited.size == totalLocs)
+      // println(at, visited.size, totalLocs, visited)
+      println(visited.size, at, visited.keys.toList.sortBy(x => visited.get(x)))
       (at, visited.isEmpty, visited.size == totalLocs) match {
         case ((1,1), false, true) => onSuccess(visited)
         case ((1,1), false, _) => onFail()
         case _ => {
-          val new_visited = if (at != home) visited + (at -> visited.size) else visited
-          val possibleMoves = getPossibleMoves(at, n, new_visited)
-                              .filter(move => isConnected(move, n, new_visited))
-                              .filter(move => hasRouteHome(move, n, new_visited))
-          val trialCont = possibleMoves.foldRight(onFail)((move, cb) =>
-            () => nextMove(move, new_visited, onSuccess, cb)
-          )
-          trialCont()
+          // val possibleMoves = getPossibleMoves(at, n, visited)
+          //                     .filter(move => isConnected(move, n, visited))
+          //
+          // possibleMoves.map(move => nextMove(move, visited + (move -> visited.size), onSuccess, onFail))
+          //              .find(x => x != None)
+          //              .flatten
+
+          // val possibleMoves = getPossibleMoves(at, n, visited)
+          //                     .filter(move => isConnected(move, n, visited))
+          //                     .sortBy(move => Warnsdorff(move, n, visited))
+          //                     // .filter(move => hasRouteHome(move, n, new_visited))
+          // val trialCont = possibleMoves.foldRight(onFail)((move, callBack) =>
+          //   () => nextMove(move, visited + (move -> visited.size), onSuccess, callBack)
+          // )
+          // trialCont()
         }
       }
     }
